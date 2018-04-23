@@ -1,0 +1,24 @@
+version: '3'
+services:
+  app:
+    build:
+      context: docker/app
+    restart: always
+    env_file: .env
+    command: 'tail -f /dev/null'
+    working_dir: '/go/src/app'
+    volumes:
+      - './go/src/app:/go/src/app'
+      - './dist:/dist'
+    networks:
+      - back
+      
+  statsd:
+    build:
+      context: docker/statsd
+    restart: always
+    networks:
+      - back
+
+networks:
+  back:

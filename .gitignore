@@ -1,0 +1,4 @@
+go/src/app/vendor
+go/pkg
+dist/*
+!dist/.gitkeep
