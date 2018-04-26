@@ -1,0 +1,76 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/buildpack-deps:curl
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Debug
+          command: |
+            docker -v
+            docker-compose  -v
+            ls -lah
+      - run:
+          name: Build app image
+          command: |
+            set -x
+            docker-compose build app
+      - run:
+          name: Run tests...
+          command: |
+            # creating dummy container which will hold a volume with config
+            docker create -v /go/src/app --name app_volume alpine:3.4 /bin/true
+            # copying config file into this volume
+            docker cp go/src/app/. app_volume:/go/src/app
+            # starting application container using this volume
+            docker run --volumes-from app_volume -w /go/src/app $(basename $(pwd))_app dep ensure
+            docker run --volumes-from app_volume -w /go/src/app $(basename $(pwd))_app go test
+  release:
+    docker:
+      - image: circleci/buildpack-deps:curl
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build app image
+          command: |
+            set -x
+            docker-compose build app
+      - run:
+          name: Build
+          command: |
+            # creating dummy container which will hold a volume with config
+            docker create -v /go/src/app -v /dist --name app_volume alpine:3.4 /bin/true
+            # copying app into this volume
+            docker cp go/src/app/. app_volume:/go/src/app
+            # starting application container using this volume
+            echo "docker run -e \"GITHUB_TOKEN=${GITHUB_TOKEN}\" -e \"CIRCLE_TAG=${CIRCLE_TAG}\" --volumes-from app_volume -w /go/src/app $(basename $(pwd))_app \$@" > run.sh && chmod +x run.sh
+            sh run.sh dep ensure
+            sh run.sh env GOARCH=amd64 GOOS=linux go build -o /dist/mon main.go
+            mkdir /tmp/dist
+            docker cp app_volume:/dist/mon /tmp/dist/mon
+            sh run.sh env
+            sh run.sh "github-release release --pre-release --tag ${CIRCLE_TAG} --user toretto460 --repo mon --target master"
+            sh run.sh "github-release upload --file /dist/mon --tag ${CIRCLE_TAG} --user toretto460 --repo mon --name 'mon-linux-amd64'"
+      - store_artifacts:
+          path: /tmp/dist/mon
+          destination: mon
+
+workflows:
+  version: 2
+  test-n-release:
+    jobs:
+      - test:
+          filters:
+            tags:
+              ignore: /^v.*/
+      - release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/  

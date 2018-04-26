@@ -9,4 +9,3 @@ else
 fi
 
 tail -f /dev/null
-#watcher -run app/cmd -watch app
