@@ -16,7 +16,7 @@ var wg sync.WaitGroup
 func main() {
 	args := os.Args[1:]
 	config := conf.ConfigFromEnv(args[0])
-	handlers := conf.GetHandlers(config)
+	handlers, close := conf.GetHandlers(config)
 
 	log.Println("Starting main thread")
 
@@ -31,6 +31,7 @@ func main() {
 	go p.Start(startTrigger, &wg)
 
 	wg.Wait()
+	close()
 
 	log.Println("Ending main thread")
 }

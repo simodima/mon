@@ -45,23 +45,29 @@ func getStatsdClient(c Configuration) statsd.StatsdBuffer {
 }
 
 // GetHandlers will provide the configured process handlers
-func GetHandlers(c Configuration) []observer.MessageHandler {
+func GetHandlers(c Configuration) ([]observer.MessageHandler, func()) {
 	handlers := []observer.MessageHandler{
 		observer.DefaultLogger(),
 		observer.DefaultMemoryHandler(),
 		observer.DefaultCPUHandler(),
+		observer.DefaultNETHandler(),
 	}
+
+	close := func() {}
 
 	if c.Statsd == true {
 		sc := getStatsdClient(c)
-		defer sc.Close()
+		close = func() {
+			defer sc.Close()
+		}
 
 		handlers = append(handlers,
 			s.NewMemoryHandler(sc),
 			s.NewCPUHandler(sc),
 			s.NewErrorHandler(sc),
+			s.NewNetworkHandler(sc),
 		)
 	}
 
-	return handlers
+	return handlers, close
 }
