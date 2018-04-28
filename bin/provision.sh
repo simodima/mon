@@ -1,4 +1,4 @@
 #!/bin/bash
 
 echo 'Installing deps ...'
-./bin/go.sh dep ensure
+./bin/run.sh dep ensure

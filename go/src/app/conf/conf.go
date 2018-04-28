@@ -1,9 +1,14 @@
 package conf
 
 import (
+	"app/observer"
+	s "app/statsd"
+
+	"fmt"
 	"log"
 
 	"github.com/kelseyhightower/envconfig"
+	"github.com/quipo/statsd"
 )
 
 // Configuration is the app config
@@ -12,6 +17,7 @@ type Configuration struct {
 	StatsdHost  string
 	StatsdPort  string
 	Tick        int16
+	Statsd      bool
 }
 
 func getDefaultConf(procName string) Configuration {
@@ -20,6 +26,7 @@ func getDefaultConf(procName string) Configuration {
 		StatsdPort:  "8125",
 		ProcessName: procName,
 		Tick:        5,
+		Statsd:      false,
 	}
 }
 
@@ -31,4 +38,30 @@ func ConfigFromEnv(procName string) Configuration {
 	}
 
 	return config
+}
+
+func getStatsdClient(c Configuration) statsd.StatsdBuffer {
+	return s.NewBufferedClient(fmt.Sprintf("%s:%s", c.StatsdHost, c.StatsdPort), c.ProcessName)
+}
+
+// GetHandlers will provide the configured process handlers
+func GetHandlers(c Configuration) []observer.MessageHandler {
+	handlers := []observer.MessageHandler{
+		observer.DefaultLogger(),
+		observer.DefaultMemoryHandler(),
+		observer.DefaultCPUHandler(),
+	}
+
+	if c.Statsd == true {
+		sc := getStatsdClient(c)
+		defer sc.Close()
+
+		handlers = append(handlers,
+			s.NewMemoryHandler(sc),
+			s.NewCPUHandler(sc),
+			s.NewErrorHandler(sc),
+		)
+	}
+
+	return handlers
 }
