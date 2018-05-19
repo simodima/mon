@@ -1,5 +1,7 @@
 <p align="center"><img src="doc/images/mon.png" width="360"></p>
 
+[![CircleCI](https://circleci.com/gh/toretto460/mon.svg?style=svg)](https://circleci.com/gh/toretto460/mon)
+
 # MON (the process monitor)
 
 Process monitor is a simple command to wrap your application and monitor it. That's it!
