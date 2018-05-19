@@ -36,19 +36,13 @@ Your statsd server will receive the following metrics
 # How to use it 
 
 ```
-    ~/ $ MON_PROCESSNAME=infinite-consumer MON_TICK=5 mon  my-queue-consumer  -m 200 -p 1
-         ____________________________________________ ___  _________________  ___________ 
-         |                                              |           |               |
-    mon _|                                              |           |               |
-    configuration (optional)                            |           |               | 
-                                                        |           |               |
-    mon ________________________________________________|           |               |
-                                                                    |               |
-                                                                    |               |
-    your command  __________________________________________________|               |
-                                                                                    |
-    your command  __________________________________________________________________|
-    options
+~/ $ MON_PROCESSNAME=infinite-consumer MON_TICK=5 mon my-queue-consumer -m 200 -p 1   
+     ────────────────────────────────────┬─────── ─┬─ ────────┬──────── ─────┬─────   
+                                         │         │          │              │        
+mon configuration (optional) ────────────┘         │          │              │        
+mon ───────────────────────────────────────────────┘          │              │        
+your command ─────────────────────────────────────────────────┘              │        
+your command options ────────────────────────────────────────────────────────┘        
 ``` 
 
 # Configuration 
