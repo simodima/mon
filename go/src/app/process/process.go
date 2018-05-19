@@ -62,6 +62,7 @@ func (mp MonitoredProcess) Start(startTrigger chan bool, wg *sync.WaitGroup) {
 	go mp.forwardTerminatingSignals(cmd.Process)
 	go mp.cpuMon(proc)
 	go mp.memMon(proc)
+	go mp.netMon(proc)
 
 	mp.send(e.LogEventf("Waiting for subprocess %d", pid))
 	err = cmd.Wait()
@@ -100,6 +101,13 @@ func (mp MonitoredProcess) memMon(p *process.Process) {
 	loopFor(time.Second*time.Duration(mp.tick), func() {
 		mem, _ := p.MemoryInfo()
 		mp.send(e.MemoryEvent(mem))
+	})
+}
+
+func (mp MonitoredProcess) netMon(p *process.Process) {
+	loopFor(time.Second*time.Duration(mp.tick), func() {
+		net, _ := p.NetIOCounters(false)
+		mp.send(e.NetworkEvent(net[0]))
 	})
 }
 

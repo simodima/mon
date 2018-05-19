@@ -1,6 +1,6 @@
 # MON (the process monitor)
 
-Process monitor is a simple command to wrap your application an monitor it. That's it!
+Process monitor is a simple command to wrap your application and monitor it. That's it!
 Whether you're running a cron command, a long-running process or the entire application you can prepend the `pm` to the execution to monitor the CPU and Memory
 
 # How to
@@ -27,6 +27,8 @@ We provide sensible defaults for every configuration, but if you need to customi
 
 #### StatsD host & port configuration
 
+MON_STATSD=true #The default value is false
+
 MON_STATSDHOST=localhost
 
 MON_STATSDPORT=8125
@@ -38,7 +40,7 @@ MON_PROCESSNAME=command_name
 (you will receive `command_name.error`, `command_name.cpu`, `command_name.memory` metrics inside statsd)
 
 
-#### The interval for data sampling (secods)
+#### The interval for data sampling (seconds)
 
 MON_TICK=5
 
