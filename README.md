@@ -47,7 +47,7 @@ your command options ───────────────────�
 
 # Configuration 
 
-We provide sensible defaults for every configuration, but if you need to customize metrics here the list of env variables to provide:
+We provide defaults for every configuration, but if you need to customize metrics here the list of env variables to provide:
 
 - `MON_STATSD`: enable\disable statsd metrics, default disabled (example: `MON_STATSD=true`)
 - `MON_STATSDHOST`: the hostname of statsd daemon (example: `MON_STATSDHOST=localhost`)
