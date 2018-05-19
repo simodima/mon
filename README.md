@@ -49,17 +49,11 @@ your command options ───────────────────�
 
 We provide sensible defaults for every configuration, but if you need to customize metrics here the list of env variables to provide:
 
-#### StatsD host & port configuration
-
-MON_STATSD=true #The default value is false
-
-MON_STATSDHOST=localhost
-
-MON_STATSDPORT=8125
-
-MON_PROCESSNAME=command_name
-
-MON_TICK=5 # seconds sampling interval
+- `MON_STATSD`: enable\disable statsd metrics, default disabled (example: `MON_STATSD=true`)
+- `MON_STATSDHOST`: the hostname of statsd daemon (example: `MON_STATSDHOST=localhost`)
+- `MON_STATSDPORT`: the post on which statsd is listening (example: `MON_STATSDPORT=8125`)
+- `MON_PROCESSNAME`: the name of the process which will identify the monitored command (example: `MON_PROCESSNAME=command_name`)
+- `MON_TICK`: the sampling interval in seconds (example: `MON_TICK=5`)
 
 # Development
 
