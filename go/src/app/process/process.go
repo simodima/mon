@@ -92,22 +92,28 @@ func (mp MonitoredProcess) forwardTerminatingSignals(p *os.Process) {
 
 func (mp MonitoredProcess) cpuMon(p *process.Process) {
 	loopFor(time.Second*time.Duration(mp.tick), func() {
-		cpu, _ := p.CPUPercent()
-		mp.send(e.CPUEEvent(cpu))
+		cpu, err := p.CPUPercent()
+		if err == nil {
+			mp.send(e.CPUEEvent(cpu))
+		}
 	})
 }
 
 func (mp MonitoredProcess) memMon(p *process.Process) {
 	loopFor(time.Second*time.Duration(mp.tick), func() {
-		mem, _ := p.MemoryInfo()
-		mp.send(e.MemoryEvent(mem))
+		mem, err := p.MemoryInfo()
+		if err == nil {
+			mp.send(e.MemoryEvent(mem))
+		}
 	})
 }
 
 func (mp MonitoredProcess) netMon(p *process.Process) {
 	loopFor(time.Second*time.Duration(mp.tick), func() {
-		net, _ := p.NetIOCounters(false)
-		mp.send(e.NetworkEvent(net[0]))
+		net, err := p.NetIOCounters(false)
+		if err == nil {
+			mp.send(e.NetworkEvent(net[0]))
+		}
 	})
 }
 
