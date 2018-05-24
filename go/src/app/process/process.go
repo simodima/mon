@@ -63,6 +63,7 @@ func (mp MonitoredProcess) Start(startTrigger chan bool, wg *sync.WaitGroup) {
 	go mp.cpuMon(proc)
 	go mp.memMon(proc)
 	go mp.netMon(proc)
+	go mp.uptimeMon(proc, time.Now())
 
 	mp.send(e.LogEventf("Waiting for subprocess %d", pid))
 	err = cmd.Wait()
@@ -114,6 +115,13 @@ func (mp MonitoredProcess) netMon(p *process.Process) {
 		if err == nil {
 			mp.send(e.NetworkEvent(net[0]))
 		}
+	})
+}
+
+func (mp MonitoredProcess) uptimeMon(p *process.Process, startTime time.Time) {
+	loopFor(time.Second*time.Duration(mp.tick), func() {
+		elapsed := time.Now().Sub(startTime)
+		mp.send(e.UptimeEvent(elapsed))
 	})
 }
 

@@ -3,6 +3,7 @@ package events
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/shirou/gopsutil/net"
 	"github.com/shirou/gopsutil/process"
@@ -19,6 +20,7 @@ type ProcessEvent struct {
 const MEMORY = "MEM"
 const NETWORK = "NET"
 const CPU = "CPU"
+const UPTIME = "UPTIME"
 const STARTED = "STARTED"
 const DONE = "DONE"
 const FAILED = "FAILED"
@@ -32,6 +34,11 @@ func CPUEEvent(percent float64) ProcessEvent {
 func MemoryEvent(memoryStats *process.MemoryInfoStat) ProcessEvent {
 	memAsString, _ := json.Marshal(memoryStats)
 	return ProcessEvent{Name: MEMORY, Data: string(memAsString), Message: "Memory stats"}
+}
+
+func UptimeEvent(uptime time.Duration) ProcessEvent {
+	uptimeSeconds, _ := json.Marshal(uptime.Seconds())
+	return ProcessEvent{Name: UPTIME, Data: string(uptimeSeconds), Message: "Uptime"}
 }
 
 func NetworkEvent(netStats net.IOCountersStat) ProcessEvent {
