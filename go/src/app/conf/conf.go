@@ -51,6 +51,7 @@ func GetHandlers(c Configuration) ([]observer.MessageHandler, func()) {
 		observer.DefaultMemoryHandler(),
 		observer.DefaultCPUHandler(),
 		observer.DefaultNETHandler(),
+		observer.DefaultUptimeHandler(),
 	}
 
 	close := func() {}
@@ -66,6 +67,7 @@ func GetHandlers(c Configuration) ([]observer.MessageHandler, func()) {
 			s.NewCPUHandler(sc),
 			s.NewErrorHandler(sc),
 			s.NewNetworkHandler(sc),
+			s.NewUptimeHandler(sc),
 		)
 	}
 
