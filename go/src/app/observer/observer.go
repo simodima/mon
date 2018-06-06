@@ -23,7 +23,10 @@ func Start(pEvents chan e.ProcessEvent, startTrigger chan bool, wg *sync.WaitGro
 		for _, h := range handlers {
 			if h.Supports(event.Name) {
 				errResult := make(chan error, 1)
-				go func() { errResult <- h.Handle(event) }()
+				go func() {
+					errResult <- h.Handle(event)
+					close(errResult)
+				}()
 				select {
 				case err := <-errResult:
 					if err != nil {

@@ -63,6 +63,7 @@ func (mp MonitoredProcess) Start(startTrigger chan bool, wg *sync.WaitGroup) {
 	go mp.cpuMon(proc)
 	go mp.memMon(proc)
 	go mp.netMon(proc)
+	go mp.uptimeMon(proc, time.Now())
 
 	mp.send(e.LogEventf("Waiting for subprocess %d", pid))
 	err = cmd.Wait()
@@ -92,22 +93,35 @@ func (mp MonitoredProcess) forwardTerminatingSignals(p *os.Process) {
 
 func (mp MonitoredProcess) cpuMon(p *process.Process) {
 	loopFor(time.Second*time.Duration(mp.tick), func() {
-		cpu, _ := p.CPUPercent()
-		mp.send(e.CPUEEvent(cpu))
+		cpu, err := p.CPUPercent()
+		if err == nil {
+			mp.send(e.CPUEEvent(cpu))
+		}
 	})
 }
 
 func (mp MonitoredProcess) memMon(p *process.Process) {
 	loopFor(time.Second*time.Duration(mp.tick), func() {
-		mem, _ := p.MemoryInfo()
-		mp.send(e.MemoryEvent(mem))
+		mem, err := p.MemoryInfo()
+		if err == nil {
+			mp.send(e.MemoryEvent(mem))
+		}
 	})
 }
 
 func (mp MonitoredProcess) netMon(p *process.Process) {
 	loopFor(time.Second*time.Duration(mp.tick), func() {
-		net, _ := p.NetIOCounters(false)
-		mp.send(e.NetworkEvent(net[0]))
+		net, err := p.NetIOCounters(false)
+		if err == nil {
+			mp.send(e.NetworkEvent(net[0]))
+		}
+	})
+}
+
+func (mp MonitoredProcess) uptimeMon(p *process.Process, startTime time.Time) {
+	loopFor(time.Second*time.Duration(mp.tick), func() {
+		elapsed := time.Now().Sub(startTime)
+		mp.send(e.UptimeEvent(elapsed))
 	})
 }
 

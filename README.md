@@ -7,6 +7,14 @@
 Process monitor is a simple command to wrap your application and monitor it. That's it!
 Whether you're running a cron command, a long-running process or the entire application you can prepend `mon` to the execution command to monitor the CPU, memory and network usage.
 
+# Installation
+
+```bash
+MON_VERSION=v0.1.0 sudo curl -sL https://github.com/toretto460/mon/releases/download/$MON_VERSION/default.mon-linux-amd64 -o /usr/local/bin/mon
+sudo chmod +x /usr/local/bin/mon
+mon sleep 10
+```
+
 # Supported Backends
 
 The only supported backend is [statsd][statsd]
